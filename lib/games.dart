@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_workshop_1/game_details.dart';
 import 'package:flutter_workshop_1/games_view_model.dart';
 import 'package:flutter_workshop_1/models.dart';
 
@@ -26,13 +27,7 @@ class _GamePageState extends State<GamePage> {
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             return ListView.builder(
-              itemBuilder: (context, index) {
-                return GameItem(
-                  title: snapshot.data[index].name,
-                  subtitle: snapshot.data[index].concatGenres,
-                  imageUrl: snapshot.data[index].cropBackgroundImage(96),
-                );
-              },
+              itemBuilder: (context, index) => buildItem(snapshot.data[index]),
               itemCount: snapshot.data.length,
             );
           } else if (snapshot.hasError) {
@@ -48,27 +43,46 @@ class _GamePageState extends State<GamePage> {
       ),
     );
   }
+
+  buildItem(Game game) {
+    return GameItem(
+      title: game.name,
+      subtitle: game.concatGenres,
+      imageUrl: game.cropBackgroundImage(96),
+      onPressed: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => GameDetailsPage(game: game),
+        ),
+      ),
+    );
+  }
 }
 
 class GameItem extends StatelessWidget {
   final String imageUrl;
   final String title;
   final String subtitle;
+  final VoidCallback onPressed;
 
-  const GameItem({Key key, this.imageUrl, this.title, this.subtitle})
+  const GameItem(
+      {Key key, this.imageUrl, this.title, this.subtitle, this.onPressed})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(10.0),
-      child: Container(
-        child: Row(
-          children: [
-            buildCover(),
-            buildTitles(context),
-            Icon(Icons.keyboard_arrow_right)
-          ],
+    return InkWell(
+      onTap: onPressed,
+      child: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: Container(
+          child: Row(
+            children: [
+              buildCover(),
+              buildTitles(context),
+              Icon(Icons.keyboard_arrow_right)
+            ],
+          ),
         ),
       ),
     );
