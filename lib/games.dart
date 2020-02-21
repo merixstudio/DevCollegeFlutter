@@ -1,18 +1,50 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_workshop_1/games_view_model.dart';
+import 'package:flutter_workshop_1/models.dart';
 
-class GamePage extends StatelessWidget {
+class GamePage extends StatefulWidget {
+  @override
+  _GamePageState createState() => _GamePageState();
+}
+
+class _GamePageState extends State<GamePage> {
+  Future<List<Game>> futureGames;
+  GamesViewModel _gamesViewModel;
+
+  @override
+  void initState() {
+    super.initState();
+    _gamesViewModel = GamesViewModel();
+    futureGames = _gamesViewModel.fetchGames();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: ListView.builder(
-        itemBuilder: (context, index) {
-          return GameItem(
-            title: "Game #$index",
-            subtitle: "Subtitle",
-            imageUrl: "https://picsum.photos/seed/game-$index/60/60",
-          );
+      child: FutureBuilder<List<Game>>(
+        future: futureGames,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return ListView.builder(
+              itemBuilder: (context, index) {
+                return GameItem(
+                  title: snapshot.data[index].name,
+                  subtitle: snapshot.data[index].concatGenres,
+                  imageUrl: snapshot.data[index].cropBackgroundImage(96),
+                );
+              },
+              itemCount: snapshot.data.length,
+            );
+          } else if (snapshot.hasError) {
+            return Center(
+              child: Text(
+                "Whoops! Try again later.",
+                style: Theme.of(context).textTheme.title,
+              ),
+            );
+          }
+          return Center(child: CircularProgressIndicator());
         },
-        itemCount: 300,
       ),
     );
   }
