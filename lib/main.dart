@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_workshop_1/games.dart';
 
 void main() => runApp(MainApp());
 
@@ -22,7 +23,7 @@ class HomePage extends StatelessWidget {
       appBar: AppBar(
         title: Text("Sandbox"),
       ),
-      body: SandboxPage(),
+      body: GamePage(),
     );
   }
 }
